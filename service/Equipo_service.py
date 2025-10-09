@@ -23,6 +23,19 @@ class Equipo_service:
 
             equipos.append(eq)
 
+        cur.close()
         conn.close()
         return equipos
     
+    def seleccionar(placa):
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute(DAO.seleccionar(placa))
+        r = cur.fetchone()
+
+        cur.close()
+        conn.close()
+        el = ElementoDTO(idElemento=r[2], descripcion=r[3], cantidad=r[4])
+        l = LaboratorioDTO(idLaboratorio=r[5], descripcion=r[6])
+        es = EstadoDTO(idEstado=r[7], descripcion=r[8])
+        return EquipoDTO(idEquipo=r[0], placa=r[1], Elemento=el, Laboratorio=l, Estado=es)

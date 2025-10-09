@@ -1,11 +1,11 @@
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from service.Estudiante_service import Estudiante_service
 from service.Proyecto_C_service import Proyecto_C_service
 from service.Equipo_service import Equipo_service
 from service.Estado_service import Estado_service
 from service.Laboratorio_service import Laboratorio_service
 from service.Elemento_service import Elemento_service
-
-
 
 if __name__ == "__main__":
     estudiante_service= Estudiante_service()

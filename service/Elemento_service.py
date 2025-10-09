@@ -17,5 +17,6 @@ class Elemento_service:
             p = ElementoDTO(idElemento=r[0], descripcion=r[1], cantidad=r[2])
             elementos.append(p)
 
+        cur.close()
         conn.close()
         return elementos

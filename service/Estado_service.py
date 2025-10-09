@@ -17,5 +17,6 @@ class Estado_service:
             p = EstadoDTO(idEstado=r[0], descripcion=r[1])
             estados.append(p)
 
+        cur.close()
         conn.close()
         return estados

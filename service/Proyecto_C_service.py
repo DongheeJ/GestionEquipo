@@ -17,5 +17,6 @@ class Proyecto_C_service:
             p = Proyecto_C_DTO(idProyecto_C=r[0], nombre=r[1])
             proyectos.append(p)
 
+        cur.close()
         conn.close()
         return proyectos

@@ -17,5 +17,6 @@ class Laboratorio_service:
             p = LaboratorioDTO(idLaboratorio=r[0], descripcion=r[1])
             laboratorios.append(p)
 
+        cur.close()
         conn.close()
         return laboratorios

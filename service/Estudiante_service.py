@@ -17,5 +17,18 @@ class Estudiante_service:
             e  = EstudianteDTO(r[0], r[1], r[2], r[3], r[4], r[5], r[6], pr)
             estudiantes.append(e)
         
+        cur.close()
         conn.close()
         return estudiantes
+
+    def seleccionar(inf_estudiante):
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute(DAO.seleccionar(inf_estudiante))
+        selected = cur.fetchone()
+
+        cur.close()
+        conn.close()
+        
+        pr = Proyecto_C_DTO(selected[7], selected[8])
+        return EstudianteDTO(selected[0], selected[1], selected[2], selected[3], selected[4], selected[5], selected[6], pr)

@@ -42,6 +42,12 @@ class Prestamo_view:
         btn_show = tk.Button(root, text="Mostrar", command=self.show_values)
         btn_show.pack(pady=5)
 
+    def get_placa(self):
+        return self.inputPlaca.get()
+    
+    def get_inf_Estudiante(self):
+        return self.inputEstudiante.get()
+    
     def add_consumible(self):
         """새 Entry 추가"""
         entry = tk.Entry(self.frame_ipConsumibles, width=30)

@@ -34,25 +34,25 @@ if __name__ == "__main__":
             f"Estado: {eq.get_Estado().get_descripcion()}"
         )
 
-        # === Elementos ===
-        elemento_service = Elemento_service()
-        elementos = elemento_service.listar()
-        print("\nELEMENTOS ______________________________")
-        for el in elementos:
-            print(f"{el.get_idElemento()} | {el.get_descripcion()} | Cantidad: {el.get_cantidad()}")
+    # === Elementos ===
+    elemento_service = Elemento_service()
+    elementos = elemento_service.listar()
+    print("\nELEMENTOS ______________________________")
+    for el in elementos:
+        print(f"{el.get_idElemento()} | {el.get_descripcion()} | Cantidad: {el.get_cantidad()}")
 
-        # === Laboratorios ===
-        laboratorio_service = Laboratorio_service()
-        laboratorios = laboratorio_service.listar()
-        print("\nLABORATORIOS ___________________________")
-        for lab in laboratorios:
-            print(f"{lab.get_idLaboratorio()} | {lab.get_descripcion()}")
+    # === Laboratorios ===
+    laboratorio_service = Laboratorio_service()
+    laboratorios = laboratorio_service.listar()
+    print("\nLABORATORIOS ___________________________")
+    for lab in laboratorios:
+        print(f"{lab.get_idLaboratorio()} | {lab.get_descripcion()}")
 
-        # === Estados ===
-        estado_service = Estado_service()
-        estados = estado_service.listar()
-        print("\nESTADOS ________________________________")
-        for es in estados:
-            print(f"{es.get_idEstado()} | {es.get_descripcion()}")
+    # === Estados ===
+    estado_service = Estado_service()
+    estados = estado_service.listar()
+    print("\nESTADOS ________________________________")
+    for es in estados:
+        print(f"{es.get_idEstado()} | {es.get_descripcion()}")
 
         

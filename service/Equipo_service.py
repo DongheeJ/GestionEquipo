@@ -20,7 +20,7 @@ class Equipo_service:
             l = LaboratorioDTO(idLaboratorio=r[5], descripcion=r[6])
             es = EstadoDTO(idEstado=r[7], descripcion=r[8])
             eq = EquipoDTO(idEquipo=r[0], placa=r[1], Elemento=el, Laboratorio=l, Estado=es)
-  
+
             equipos.append(eq)
 
         conn.close()

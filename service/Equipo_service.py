@@ -27,7 +27,7 @@ class Equipo_service:
         conn.close()
         return equipos
     
-    def seleccionar(placa):
+    def seleccionar(self,placa):
         conn = get_conn()
         cur = conn.cursor()
         cur.execute(DAO.seleccionar(placa))
@@ -35,6 +35,9 @@ class Equipo_service:
 
         cur.close()
         conn.close()
+        if r is None:
+            return None
+        
         el = ElementoDTO(idElemento=r[2], descripcion=r[3], cantidad=r[4])
         l = LaboratorioDTO(idLaboratorio=r[5], descripcion=r[6])
         es = EstadoDTO(idEstado=r[7], descripcion=r[8])

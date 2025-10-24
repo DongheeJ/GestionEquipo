@@ -21,7 +21,7 @@ class Estudiante_service:
         conn.close()
         return estudiantes
 
-    def seleccionar(inf_estudiante):
+    def seleccionar(self,inf_estudiante):
         conn = get_conn()
         cur = conn.cursor()
         cur.execute(DAO.seleccionar(inf_estudiante))
@@ -29,6 +29,9 @@ class Estudiante_service:
 
         cur.close()
         conn.close()
+        
+        if(selected is None):
+            return None
         
         pr = Proyecto_C_DTO(selected[7], selected[8])
         return EstudianteDTO(selected[0], selected[1], selected[2], selected[3], selected[4], selected[5], selected[6], pr)

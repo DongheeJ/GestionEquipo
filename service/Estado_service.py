@@ -1,12 +1,13 @@
 from persistencia.Conexion import get_conn
 from persistencia.Estado_DAO import Estado_DAO as DAO
 from model.EstadoDTO import EstadoDTO
+from typing import List
 
 class Estado_service:
     def __init__(self):
         pass
 
-    def listar(self): 
+    def listar(self) -> List[EstadoDTO]: 
         conn = get_conn()
         cur = conn.cursor()
         cur.execute(DAO.listar())

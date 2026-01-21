@@ -9,3 +9,11 @@ class Consumible_DAO:
             values ('{descripcion}',{idPrestamo});
         """
         return query
+    @staticmethod
+    def listar_por_prestamo(idPrestamo):
+        query = f"""
+            SELECT c.idConsumible,c.descripcion,c.idPrestamo 
+            FROM Consumible c
+            WHERE idPrestamo = '{idPrestamo}' 
+            """
+        return query

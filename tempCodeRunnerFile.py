@@ -1,2 +1,1 @@
-
-        equipo_service=equipo_service,
+from controller.Prestamo_controller import Prestamo_controller

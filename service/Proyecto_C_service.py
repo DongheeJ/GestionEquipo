@@ -1,15 +1,16 @@
 from persistencia.Conexion import get_conn
 from persistencia.Proyecto_C_DAO import Proyecto_C_DAO as DAO
 from model.Proyecto_C_DTO import Proyecto_C_DTO
+from typing import List
 
 class Proyecto_C_service:
     def __init__(self):
         pass
 
-    def listar(self): 
+    def listar(self,nombre="") -> List[Proyecto_C_DTO]: 
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute(DAO.listar())
+        cur.execute(DAO.listar(nombre))
         rs = cur.fetchall()
 
         proyectos = []
@@ -20,3 +21,27 @@ class Proyecto_C_service:
         cur.close()
         conn.close()
         return proyectos
+    
+    def insertar(self,nombre):
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute(DAO.insertar(nombre))
+        conn.commit()
+        cur.close()
+        conn.close()
+
+    def delete(self,id_proyecto):
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute(DAO.delete(id_proyecto))
+        conn.commit()
+        cur.close()
+        conn.close()
+
+    def update(self,id_proyecto,nombre):
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute(DAO.update(id_proyecto,nombre))
+        conn.commit()
+        cur.close()
+        conn.close()

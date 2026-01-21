@@ -1,7 +1,12 @@
-import sys, os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from tkinter import Tk
 from service.Equipo_service import Equipo_service
-from datetime import datetime
+from view.Equipo_view import Equipo_view
+from controller.Equipo_controller import Equipo_controller
+
 if __name__ == "__main__":
+    
+    root = Tk()
     service = Equipo_service()
-    print(service.seleccionar("ABC123").get_placa())
+    view = Equipo_view(root)
+    controller = Equipo_controller(service, view)
+    root.mainloop()

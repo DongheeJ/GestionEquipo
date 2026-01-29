@@ -28,6 +28,7 @@ class List_prestamo_controller:
         self.equipo_service = Equipo_service()
         self.estudiante_service = Estudiante_service()
         self.view = view
+        self.view.btn_eliminar_multi.config(command=self.eliminar_multi)
         self.view.set_ver_consumibles_handler(self.ver_consumibles)
         self.view.set_pagar_multa_handle(self.pagar_multa)
         self.view.set_entregar_handle(self.entregar)
@@ -107,13 +108,17 @@ class List_prestamo_controller:
         multados = self.view.get_multados()
         no_entregados = self.view.get_no_entregados()
         entregados = self.view.get_entregados()
+        sort_fecha = self.view.get_sort_field()
+        sort_order = self.view.get_sort_order()
         # 3) service에서 PrestamoDTO 리스트 받아오기
         prestamos = self.prestamo_service.listar(
             estudiante=estudiante,
             equipo=equipo,
             multados=multados,
             no_entregados=no_entregados,
-            entregados=entregados
+            entregados=entregados,
+            sort_fecha=sort_fecha,
+            sort_order=sort_order
         )
 
         # 4) prestamos 객체 그대로 전달
@@ -168,7 +173,7 @@ class List_prestamo_controller:
         return multa
     
     def entregar(self, prestamo: PrestamoDTO):
-        if prestamo.get_hora_final() is not None:
+        if prestamo.get_fecha_final() is not None:
             messagebox.showerror("","El prestamo ya está entregado.")
             return
         
@@ -191,11 +196,11 @@ class List_prestamo_controller:
         if not confirmar:
             return
         
-        hora_final = datetime.now().strftime("%Y-%m-%d %H:%M")
+        fecha_final = datetime.now().strftime("%Y-%m-%d %H:%M")
         equipo = prestamo.get_equipo()
 
         messagebox.showinfo("Entrega exitosa","Equipo entregado de manera exitosa")
-        self.prestamo_service.entregar(hora_final,multa,prestamo.get_idPrestamo())
+        self.prestamo_service.entregar(fecha_final,multa,prestamo.get_idPrestamo())
         self.equipo_service.actualizar_estado(equipo.get_idEquipo(),idEstado = 1)
         self.listar()
 
@@ -286,3 +291,21 @@ class List_prestamo_controller:
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo eliminar.\n{e}")
 
+    def eliminar_multi(self):
+        # id가 문자열로 올 수도 있어서 int 변환
+        confirmar = messagebox.askyesno(
+            "Confirmar",
+            f"¿Seguro que deseas eliminar los prestamos?"
+        )
+        if not confirmar:
+            return
+
+        try:
+            id_prestamos = self.view.get_selected_ids()
+            for id in id_prestamos:
+                self.prestamo_service.delete(id)
+
+            messagebox.showinfo("OK", "Prestamo eliminado correctamente.")
+            self.listar()  
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo eliminar.\n{e}")

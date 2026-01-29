@@ -1,33 +1,27 @@
 class Laboratorio_DAO:
     @staticmethod
     def listar(nombre=""):
+        query = "SELECT idLaboratorio, nombre FROM Laboratorio"
+        params = []
+        
         if nombre:
-            return (
-                f"SELECT idLaboratorio, nombre "
-                f"FROM Laboratorio "
-                f"WHERE nombre LIKE '%{nombre}%'"
-            )
-        return "SELECT idLaboratorio, nombre FROM Laboratorio"
-
+            query += " WHERE nombre LIKE ?"
+            params.append(f"%{nombre}%")
+            
+        return query, tuple(params)
 
     @staticmethod
     def insertar(nombre):
-        return (
-            f"INSERT INTO Laboratorio (nombre) VALUES ('{nombre}')"
-        )
+        # INSERT OR IGNORE와 파라미터 바인딩 적용
+        query = "INSERT OR IGNORE INTO Laboratorio (nombre) VALUES (?)"
+        return query, (nombre,)
 
     @staticmethod
     def delete(idLaboratorio):
-
-        return (
-            f"DELETE FROM Laboratorio "
-            f"WHERE idLaboratorio = '{idLaboratorio}'"
-        )
+        query = "DELETE FROM Laboratorio WHERE idLaboratorio = ?"
+        return query, (idLaboratorio,)
 
     @staticmethod
     def update(idLaboratorio, nombre):
-        return (
-            f"UPDATE Laboratorio "
-            f"SET nombre = '{nombre}' "
-            f"WHERE idLaboratorio = {idLaboratorio}"
-        )
+        query = "UPDATE Laboratorio SET nombre = ? WHERE idLaboratorio = ?"
+        return query, (nombre, idLaboratorio)

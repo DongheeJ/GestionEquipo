@@ -72,6 +72,9 @@ class Equipo_view:
         self.btn_registrar = tk.Button(frame_btn, text="Registrar equipo")
         self.btn_registrar.grid(row=0, column=1, padx=5)
 
+        self.btn_eliminar_multi = tk.Button(frame_btn, text="Eliminar seleccionados", bg="#ffcccc")
+        self.btn_eliminar_multi.grid(row=0, column=2, padx=5)
+
         # ================= 테이블 (Treeview) =================
         columnas = ("ID", "Placa", "Elemento", "Laboratorio", "Estado", "Editar", "Eliminar")
         
@@ -103,6 +106,16 @@ class Equipo_view:
         scrollbar_y.pack(side="right", fill="y", padx=(0, 20), pady=20)
 
     # ================= 내부 로직 메서드 =================
+
+    def get_selected_ids(self):
+        items = self.tabla.selection() # 선택된 모든 행의 iid 가져오기
+        selected_ids = []
+        for item in items:
+            values = self.tabla.item(item, "values")
+            if values:
+                selected_ids.append(int(values[0])) # ID 컬럼값 추출
+        return selected_ids
+    
     def _toggle_radio(self):
         """라디오 버튼 토글 로직: 이미 선택된 것을 누르면 해제"""
         current_val = self.estado_var.get()
@@ -185,12 +198,16 @@ class Equipo_view:
         self.on_eliminar = handler
 
     def cargar_elementos(self, elementos):
-        map_elementos = {desc: _id for _id, desc in elementos}
-        self.elementos_descripciones = list(map_elementos.keys())
+        map_elementos = {"None": None}
+        for _id, desc in elementos:
+            map_elementos[desc] = _id
 
+        # self.elementos_descripciones = ["None"] + [desc for _id, desc in elementos]
+        self.elementos_descripciones = list(map_elementos.keys())
         self.combo_elemento["values"] = self.elementos_descripciones
 
         # 키 입력 시 필터 (디바운스 적용)
+        # self.combo_elemento.current(0)
         self.combo_elemento.bind("<KeyRelease>", self._filtrar_elementos_debounced)
 
     def _filtrar_elementos_debounced(self, event=None):
@@ -210,27 +227,37 @@ class Equipo_view:
         if not texto:
             filtrados = self.elementos_descripciones
         else:
-            filtrados = [
-                desc for desc in self.elementos_descripciones
-                if texto in desc
+            filtrados = ["None"] + [
+                desc for desc in self.elementos_descripciones 
+                if desc != "None" and (texto.lower() in desc.lower())
             ]
-
         self.combo_elemento["values"] = filtrados
 
     def cargar_laboratorios(self, laboratorios):
-        map_laboratorios = {nombre: _id for _id, nombre in laboratorios}
-        self.laboratorios_nombres = list(map_laboratorios.keys())
+        self.map_laboratorios = {"None": None}
+        for _id, nombre in laboratorios:
+            self.map_laboratorios[nombre] = _id
 
+        # 2. Obtenemos la lista de nombres (el orden se mantiene en Python 3.7+)
+        self.laboratorios_nombres = list(self.map_laboratorios.keys())
+        
+        # 3. Cargamos los valores en el combobox
         self.combo_laboratorio["values"] = self.laboratorios_nombres
 
+        # 4. Dejamos el campo vacío al inicio (sin seleccionar "None" automáticamente)
+        self.combo_laboratorio.set('')
+
+        # Vinculación del evento de teclado con el filtro (Debounce)
         self.combo_laboratorio.bind("<KeyRelease>", self._filtrar_laboratorios_debounced)
 
     def _filtrar_laboratorios_debounced(self, event=None):
         texto = self.combo_laboratorio.get()
 
+        # Cancelamos el temporizador previo si existe
         if self._laboratorio_filter_after_id is not None:
             self.root.after_cancel(self._laboratorio_filter_after_id)
 
+        # Ejecutamos el filtro tras 150ms de inactividad
         self._laboratorio_filter_after_id = self.root.after(
             150,
             lambda: self._aplicar_filtro_laboratorios(texto)
@@ -238,11 +265,13 @@ class Equipo_view:
 
     def _aplicar_filtro_laboratorios(self, texto):
         if not texto:
+            # Si no hay texto, mostramos la lista completa (incluyendo "None")
             filtrados = self.laboratorios_nombres
         else:
-            filtrados = [
-                nombre for nombre in self.laboratorios_nombres
-                if texto in nombre
+            # Filtramos por texto y mantenemos "None" siempre al principio
+            filtrados = ["None"] + [
+                nombre for nombre in self.laboratorios_nombres 
+                if nombre != "None" and (texto.lower() in nombre.lower())
             ]
 
         self.combo_laboratorio["values"] = filtrados

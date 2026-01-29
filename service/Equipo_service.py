@@ -80,7 +80,6 @@ class Equipo_service:
             conn.commit()
             return "OK", "Equipo registrado correctamente."
         except sqlite3.IntegrityError as e:
-            # UNIQUE, FK, NOT NULL 전부 여기로 옴
             if "UNIQUE constraint failed: Equipo.placa" in str(e):
                 return "ERROR","La placa ya existe"
             else:

@@ -25,21 +25,18 @@ class Elemento_DAO:
 
     @staticmethod
     def insertar(descripcion):
-        return (
-            f"INSERT INTO Elemento (descripcion) VALUES ('{descripcion}')"
-        )
+        # f-string 대신 ?를 사용하고, 데이터는 따로 튜플로 반환합니다.
+        query = "INSERT OR IGNORE INTO Elemento (descripcion) VALUES (?)"
+        return query, (descripcion,)
 
     @staticmethod
     def delete(id_elemento):
-        return (
-            f"DELETE FROM Elemento "
-            f"WHERE idElemento = '{id_elemento}'"
-        )
+        # id 같은 숫자형태도 ?를 사용하는 것이 안전합니다.
+        query = "DELETE FROM Elemento WHERE idElemento = ?"
+        return query, (id_elemento,)
 
     @staticmethod
-    def update(id_elemento, descripcion, ):
-        return (
-            f"UPDATE Elemento "
-            f"SET descripcion = '{descripcion}' "
-            f"WHERE idElemento = {id_elemento}"
-        )
+    def update(id_elemento, descripcion):
+        # 콤마(,) 등 문법 오류 수정 및 바인딩 적용
+        query = "UPDATE Elemento SET descripcion = ? WHERE idElemento = ?"
+        return query, (descripcion, id_elemento)

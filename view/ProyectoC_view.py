@@ -41,6 +41,8 @@ class ProyectoC_view:
         self.btn_registrar = tk.Button(frame_btn, text="Registrar proyecto")
         self.btn_registrar.grid(row=0, column=1, padx=5)
 
+        self.btn_eliminar_multi = tk.Button(frame_btn, text="Eliminar seleccionados", bg="#ffcccc")
+        self.btn_eliminar_multi.grid(row=0, column=2, padx=5)
         # ================= 테이블 컨테이너 =================
         frame_table = tk.Frame(root)
         frame_table.pack(padx=10, pady=10, fill="both", expand=True)
@@ -54,6 +56,7 @@ class ProyectoC_view:
             frame_table,
             columns=("ID", "Nombre", "Editar", "Eliminar"),
             show="headings",
+            selectmode="extended",
             yscrollcommand=scroll_y.set,
             xscrollcommand=scroll_x.set
         )
@@ -112,6 +115,15 @@ class ProyectoC_view:
         self.on_editar = handler
     def set_eliminar_handler(self, handler):
         self.on_eliminar = handler
+
+    def get_selected_ids(self):
+        items = self.tabla.selection() # 선택된 모든 행의 iid 가져오기
+        selected_ids = []
+        for item in items:
+            values = self.tabla.item(item, "values")
+            if values:
+                selected_ids.append(int(values[0])) # ID 컬럼값 추출
+        return selected_ids
 
     def _on_click_cell(self, event):
         region = self.tabla.identify("region", event.x, event.y)

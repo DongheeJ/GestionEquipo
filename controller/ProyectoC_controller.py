@@ -19,9 +19,9 @@ class ProyectoC_controller:
         self.view.btn_listar.config(command=self.listar)
         self.view.btn_aplicar_filtros.config(command=self.aplicar_filtros)
         self.view.btn_registrar.config(command=self.abrir_registrar)
+        self.view.btn_eliminar_multi.config(command=self.eliminar_multi)
         self.view.set_editar_handler(self.abrir_editar)
         self.view.set_eliminar_handler(self.eliminar)
-
         self.listar()
         
     def listar(self):
@@ -77,6 +77,25 @@ class ProyectoC_controller:
 
         try:
             self.service.delete(id_proyectoC)
+            messagebox.showinfo("OK", "Proyecto eliminado correctamente.")
+            self.listar()  
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo eliminar.\n{e}")
+
+    def eliminar_multi(self):
+        # id가 문자열로 올 수도 있어서 int 변환
+        confirmar = messagebox.askyesno(
+            "Confirmar",
+            f"¿Seguro que deseas eliminar los proyectos?"
+        )
+        if not confirmar:
+            return
+
+        try:
+            id_proyectos = self.view.get_selected_ids()
+            for id_proyectoC in id_proyectos:
+                self.service.delete(id_proyectoC)
+                # print(id_proyectoC)
             messagebox.showinfo("OK", "Proyecto eliminado correctamente.")
             self.listar()  
         except Exception as e:

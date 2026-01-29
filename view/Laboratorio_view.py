@@ -41,6 +41,9 @@ class Laboratorio_view:
         self.btn_registrar = tk.Button(frame_btn, text="Registrar laboratorios")
         self.btn_registrar.grid(row=0, column=1, padx=5)
 
+        self.btn_eliminar_multi = tk.Button(frame_btn, text="Eliminar seleccionados", bg="#ffcccc")
+        self.btn_eliminar_multi.grid(row=0, column=2, padx=5)
+        
         frame_table = tk.Frame(root)
         frame_table.pack(padx=10, pady=10, fill="both", expand=True)
 
@@ -137,3 +140,12 @@ class Laboratorio_view:
 
         elif col == col_eliminar and self.on_eliminar:
             self.on_eliminar(idLaboratorio)
+
+    def get_selected_ids(self):
+        items = self.tabla.selection() # 선택된 모든 행의 iid 가져오기
+        selected_ids = []
+        for item in items:
+            values = self.tabla.item(item, "values")
+            if values:
+                selected_ids.append(int(values[0])) # ID 컬럼값 추출
+        return selected_ids

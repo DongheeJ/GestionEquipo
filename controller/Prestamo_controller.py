@@ -31,7 +31,7 @@ class Prestamo_controller:
         estudiante_service = self.estudiante_service
         service = self.service
 
-        hora_inicio = datetime.now().strftime("%Y-%m-%d %H:%M")
+        fecha_inicio = datetime.now().strftime("%Y-%m-%d %H:%M")
         multa_txt = self.view.get_multa()
         multa = "0"
         estudiante = estudiante_service.seleccionar(inf_Estudiante)
@@ -48,7 +48,7 @@ class Prestamo_controller:
             return
         
         messagebox.showinfo("Registro exitoso","Prestamo registrado de manera exitosa")
-        self.service.registrar(hora_inicio,multa,estudiante.get_idEstudiante(),equipo.get_idEquipo())
+        self.service.registrar(fecha_inicio,multa,estudiante.get_idEstudiante(),equipo.get_idEquipo())
         prestamo = service.seleccionar_ultimo(estudiante.get_idEstudiante(),equipo.get_idEquipo())
         if consumibles:
             consumibles = [c for c in consumibles if c.strip() != ""]
@@ -65,7 +65,7 @@ class Prestamo_controller:
         estudiante_service = self.estudiante_service
         service = self.service
 
-        hora_final = datetime.now().strftime("%Y-%m-%d %H:%M")
+        fecha_final = datetime.now().strftime("%Y-%m-%d %H:%M")
         multa_txt = self.view.get_multa()
         multa = multa_txt if multa_txt else "0"
         estudiante = estudiante_service.seleccionar(inf_Estudiante)
@@ -81,7 +81,7 @@ class Prestamo_controller:
             messagebox.showinfo("", "El equipo no pertenece al préstamo actual de este estudiante.")
             return
         messagebox.showinfo("Entrega exitosa","Equipo entregado de manera exitosa")
-        self.service.entregar(hora_final,multa,prestamo.get_idPrestamo())
+        self.service.entregar(fecha_final,multa,prestamo.get_idPrestamo())
         equipo_service.actualizar_estado(equipo.get_idEquipo(),idEstado = 1)
         self.view.clear()
         if self.on_success:

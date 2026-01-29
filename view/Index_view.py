@@ -26,6 +26,12 @@ from view.Laboratorio_view import Laboratorio_view
 from controller.Laboratorio_controller import Laboratorio_controller
 from service.Laboratorio_service import Laboratorio_service
 
+from service.Estado_service import Estado_service
+
+import sys
+from PyQt5.QtWidgets import QApplication
+from view.ExcelDrop_view import ExcelDropView
+from controller.ExcelController import ExcelController
 
 class Index_view:
     def __init__(self, root):
@@ -64,6 +70,9 @@ class Index_view:
         self.laboratorio_btn = tk.Button(frame_btn, text="Laboratorio", **btn_opt)
         self.laboratorio_btn.grid(row=1, column=2, padx=10, pady=10)
 
+        self.excel_btn = tk.Button(frame_btn, text="Excel", **btn_opt)
+        self.excel_btn.grid(row=2, column=0, padx=10, pady=10)
+
         # 4. 커맨드 연결 (기존 유지)
         self.equipo_btn.config(command=self.abrir_equipo_view)
         self.listar_prestamo_btn.config(command=self.abrir_listar_prestamo_view)
@@ -71,6 +80,7 @@ class Index_view:
         self.proyecto_c_btn.config(command=self.abrir_proyecto_c_view)
         self.elemento_btn.config(command=self.abrir_elemento_view)
         self.laboratorio_btn.config(command=self.abrir_laboratorio_view)
+        self.excel_btn.config(command=self.abrir_excel_view)
 
     def abrir_equipo_view(self):
         # 새 창 생성
@@ -152,6 +162,23 @@ class Index_view:
         laboratorio_service = Laboratorio_service()
         laboratorio_view = Laboratorio_view(ventana)
         Laboratorio_controller(laboratorio_service, laboratorio_view)
+        
+    def abrir_excel_view(self):
+        app = QApplication(sys.argv)
+        
+        laboratorio_service = Laboratorio_service()
+        elemento_service = Elemento_service()
+        estado_service = Estado_service()
+        equipo_service = Equipo_service()
+        view = ExcelDropView()
+        ExcelController(view,
+                        elemento_service=elemento_service,
+                        laboratorio_service=laboratorio_service,
+                        estado_service=estado_service,
+                        equipo_service=equipo_service)
+        
+        view.show()
+        sys.exit(app.exec_())
 
     def _ensure_top(self, child): # 이 코드가 transient의 '항상 위에 있음' 기능을 대신합니다.
         if child.winfo_exists():

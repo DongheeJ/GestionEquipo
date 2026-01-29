@@ -12,7 +12,7 @@ class Proyecto_C_DAO:
     @staticmethod
     def insertar(nombre):
         return (
-            f"INSERT INTO Proyecto_C (nombre) VALUES ('{nombre}')"
+            f"INSERT OR IGNORE INTO Proyecto_C (nombre) VALUES ('{nombre}')"
         )
 
     @staticmethod

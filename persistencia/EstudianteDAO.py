@@ -17,14 +17,17 @@ class EstudianteDAO:
             condiciones.append(f"e.cedula = '{inf}' or e.codigo = '{inf}'")
 
         if proyecto_c:
-            condiciones.append(f"pc.nombre = '{proyecto_c}'")
+            if proyecto_c == 'None':
+                condiciones.append(f"e.idProyecto_C IS NULL")
+            else:
+                condiciones.append(f"pc.nombre = '{proyecto_c}'")
 
         if multado:
             condiciones.append("p.multa > 0")
 
-        # ------- no_entregado 필터 (hora_final IS NULL) -------
+        # ------- no_entregado 필터 (fecha_final IS NULL) -------
         if no_entregado:
-            condiciones.append("p.hora_final IS NULL AND  p.idPrestamo IS NOT NULL")
+            condiciones.append("p.fecha_final IS NULL AND  p.idPrestamo IS NOT NULL")
 
         if multado or no_entregado:
             query += "JOIN Prestamo p ON e.idEstudiante = p.idEstudiante"

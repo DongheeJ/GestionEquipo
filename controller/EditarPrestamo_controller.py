@@ -18,8 +18,8 @@ class EditarPrestamo_controller:
         # ----- 폼에 기존 데이터 세팅 -----
         self.view.set_datos({
             "idPrestamo":   self.prestamo.get_idPrestamo(),
-            "hora_inicio":  self.prestamo.get_hora_inicio(),
-            "hora_final":   self.prestamo.get_hora_final(),
+            "fecha_inicio":  self.prestamo.get_fecha_inicio(),
+            "fecha_final":   self.prestamo.get_fecha_final(),
             "multa":        self.prestamo.get_multa(),
             "estudiante": self.prestamo.get_estudiante().get_nombre(),
             "equipo":     self.prestamo.get_equipo().get_Elemento().get_descripcion()+"-"+self.prestamo.get_equipo().get_placa()
@@ -36,7 +36,7 @@ class EditarPrestamo_controller:
         root = self.view.root   # Toplevel 윈도우
 
         # 필수값 검증 (원하는 필드만 골라서)
-        if not datos["hora_inicio"] or not datos["hora_final"]:
+        if not datos["fecha_inicio"] or not datos["fecha_final"]:
             messagebox.showwarning(
                 "Datos incompletos",
                 "Hora de inicio y hora final son obligatorias.",
@@ -85,8 +85,8 @@ class EditarPrestamo_controller:
             # 🔹 Prestamo_service 의 editar 시그니처에 맞게 이름만 맞추면 됨
             self.prestamo_service.editar(
                 idPrestamo=self.prestamo.get_idPrestamo(),
-                hora_inicio=datos["hora_inicio"],
-                hora_final=datos["hora_final"],
+                fecha_inicio=datos["fecha_inicio"],
+                fecha_final=datos["fecha_final"],
                 multa=multa,
                 idEstudiante=id_estudiante,
                 idEquipo=id_equipo,

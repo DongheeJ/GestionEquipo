@@ -22,6 +22,7 @@ class Equipo_controller:
         self.equipo_view = equipo_view
         self.cargar_comboboxes()
         # 버튼 이벤트 연결
+        self.equipo_view.btn_eliminar_multi.config(command=self.eliminar_multi)
         self.equipo_view.btn_listar.config(command=self.listar)
         self.equipo_view.btn_aplicar_filtros.config(command=self.aplicar_filtros)
         self.equipo_view.set_editar_handler(self.editar)
@@ -86,7 +87,6 @@ class Equipo_controller:
         RegistrarEquipo_controller(self.service, self.elemento_service, self.laboratorio_service, registrar_view,self.listar)
 
     def eliminar(self, equipo: EquipoDTO,estado):
-
         confirmar = messagebox.askyesno(
             "Confirmar",
             f"¿Seguro que deseas eliminar el equipo (placa: {equipo.get_placa()})?"
@@ -100,6 +100,26 @@ class Equipo_controller:
         try:
             self.service.delete(equipo.get_idEquipo())
             messagebox.showinfo("OK", "equipo eliminado correctamente.")
+            self.listar()  
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo eliminar.\n{e}")
+
+    def eliminar_multi(self):
+        # id가 문자열로 올 수도 있어서 int 변환
+        confirmar = messagebox.askyesno(
+            "Confirmar",
+            f"¿Seguro que deseas eliminar los equipos?"
+        )
+        if not confirmar:
+            return
+
+        try:
+            ids = self.equipo_view.get_selected_ids()
+            for id in ids:
+                self.service.delete(id)
+                # print(id)
+
+            messagebox.showinfo("OK", "Equipos eliminados correctamente.")
             self.listar()  
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo eliminar.\n{e}")

@@ -16,7 +16,6 @@ class List_prestamo_view:
         self.root.geometry(f"{width}x{height}+{x}+{y}")
         self.root.resizable(True, True)
 
-        # ---------------- 상단 필터 UI (기존 그대로) ----------------
 # ---------------- 상단 필터 및 버튼 영역 ----------------
         top_frame = tk.Frame(self.root)
         top_frame.grid(row=0, column=0, sticky="ew", pady=10)
@@ -47,6 +46,22 @@ class List_prestamo_view:
         tk.Label(filtros_frame, text='Equipo\nplaca', font=('calibre',8,'bold')).grid(row=1, column=2, padx=10)
         tk.Entry(filtros_frame, textvariable=self.equipo_var, width=15).grid(row=1, column=3, padx=5)
 
+# --- 신규: 정렬(Orden) 기능 추가 ---
+        tk.Label(filtros_frame, text='Ordenar por:', font=('calibre',8,'bold')).grid(row=2, column=2, padx=10)
+        
+        # 정렬 대상 (시작일, 종료일)
+        self.sort_field_var = tk.StringVar(value="") # 기본값
+        self.combo_sort_field = ttk.Combobox(filtros_frame, textvariable=self.sort_field_var, width=12, state="readonly")
+        self.combo_sort_field['values'] = ("","fecha_inicio", "fecha_final")
+        self.combo_sort_field.grid(row=2, column=3, padx=5, sticky="w")
+
+        # 정렬 순서 (오름차순, 내림차순)
+        self.sort_order_var = tk.StringVar(value="DESC") # 최신순이 보통 기본이므로 DESC
+        self.combo_sort_order = ttk.Combobox(filtros_frame, textvariable=self.sort_order_var, width=12, state="readonly")
+        self.combo_sort_order['values'] = ("ASC", "DESC")
+        self.combo_sort_order.grid(row=2, column=4, padx=5, sticky="w")
+        # ----------------------------------
+        
         # 2. 오른쪽: 버튼 영역 (옆으로 나란히 배치)
         boton_frame = tk.Frame(container)
         boton_frame.pack(side="left", padx=20) # filtros_frame 바로 오른쪽에 붙음
@@ -61,6 +76,8 @@ class List_prestamo_view:
         self.btn_registrar = tk.Button(boton_frame, text="Registrar", width=15, bg="#e1e1e1")
         self.btn_registrar.pack(pady=2)
 
+        self.btn_eliminar_multi = tk.Button(boton_frame, text="Eliminar seleccionados", bg="#ffcccc")
+        self.btn_eliminar_multi.pack(pady=2)
         # ---------------- 테이블 영역 (Treeview로 교체) ----------------
         self.root.grid_rowconfigure(1, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
@@ -115,7 +132,15 @@ class List_prestamo_view:
     #         self.last_selected = 0
     #     else:
     #         self.last_selected = current_val
-
+    def get_selected_ids(self):
+        items = self.tabla.selection() # 선택된 모든 행의 iid 가져오기
+        selected_ids = []
+        for item in items:
+            values = self.tabla.item(item, "values")
+            if values:
+                selected_ids.append(int(values[0])) # ID 컬럼값 추출
+        return selected_ids
+    
     def get_estudiante(self):
         return self.estudiante_var.get()
     def get_placa(self):
@@ -126,6 +151,16 @@ class List_prestamo_view:
         return self.no_entregados_var.get()
     def get_entregados(self):
         return self.entregados_var.get()
+    def get_sort_field(self):
+        selection = self.sort_field_var.get()
+        # 매핑 (UI용 텍스트 -> 실제 DB 컬럼명)
+        mapping = {
+            "fecha_inicio": "p.fecha_inicio",
+            "fecha_final": "p.fecha_final"
+        }
+        return mapping.get(selection, "")
+    def get_sort_order(self):
+        return self.sort_order_var.get() # "ASC" 또는 "DESC" 반환
     
     def set_estudiante(self,estudiante):
         self.estudiante_var.set(estudiante)
@@ -194,8 +229,8 @@ class List_prestamo_view:
 
         for p in prestamos:
             id_prestamo = p.get_idPrestamo()
-            hora_inicio = p.get_hora_inicio()
-            hora_final  = p.get_hora_final()
+            fecha_inicio = p.get_fecha_inicio()
+            fecha_final  = p.get_fecha_final()
             multa       = p.get_multa()
 
             nombre_estudiante = p.get_estudiante().get_nombre()
@@ -207,8 +242,8 @@ class List_prestamo_view:
 
             row = (
                 id_prestamo,
-                hora_inicio,
-                hora_final,
+                fecha_inicio,
+                fecha_final,
                 multa,
                 nombre_estudiante,
                 equipo_info,

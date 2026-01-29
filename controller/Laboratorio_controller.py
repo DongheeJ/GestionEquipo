@@ -16,6 +16,7 @@ class Laboratorio_controller:
         self.view = view
         
         # 버튼 이벤트 연결
+        self.view.btn_eliminar_multi.config(command=self.eliminar_multi)
         self.view.btn_listar.config(command=self.listar)
         self.view.btn_aplicar_filtros.config(command=self.aplicar_filtros)
         self.view.btn_registrar.config(command=self.abrir_registrar)
@@ -78,6 +79,26 @@ class Laboratorio_controller:
         try:
             self.service.delete(idLaboratorio)
             messagebox.showinfo("OK", "Laboratorio eliminado correctamente.")
+            self.listar()  
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo eliminar.\n{e}")
+
+    def eliminar_multi(self):
+        # id가 문자열로 올 수도 있어서 int 변환
+        confirmar = messagebox.askyesno(
+            "Confirmar",
+            f"¿Seguro que deseas eliminar los Laboratorios?"
+        )
+        if not confirmar:
+            return
+
+        try:
+            ids = self.view.get_selected_ids()
+            for id in ids:
+                self.service.delete(id)
+                # print(id)
+
+            messagebox.showinfo("OK", "Laboratorios eliminados correctamente.")
             self.listar()  
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo eliminar.\n{e}")

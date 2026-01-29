@@ -23,6 +23,7 @@ class Estudiante_controller:
         self.proyecto_service = proyecto_service
         self.estidiante_view = estidiante_view
 
+        self.estidiante_view.btn_eliminar_multi.config(command=self.eliminar_multi)
         self.estidiante_view.btn_listar.config(command=self.listar)
         self.estidiante_view.btn_aplicar_filtros.config(command=self.aplicar_filtros)
         self.estidiante_view.set_ver_prestamos_handler(self.ver_prestamos)
@@ -106,3 +107,23 @@ class Estudiante_controller:
         proyectos = self.proyecto_service.listar()
         datos_elem = [(p.get_idProyecto_C(), p.get_nombre()) for p in proyectos]
         self.estidiante_view.cargar_proyectos(datos_elem)
+
+    def eliminar_multi(self):
+        # id가 문자열로 올 수도 있어서 int 변환
+        confirmar = messagebox.askyesno(
+            "Confirmar",
+            f"¿Seguro que deseas eliminar los estudiantes?"
+        )
+        if not confirmar:
+            return
+
+        try:
+            ids = self.estidiante_view.get_selected_ids()
+            for id in ids:
+                self.estudiante_service.delete(id)
+                # print(id)
+
+            messagebox.showinfo("OK", "Estudiantes eliminados correctamente.")
+            self.listar()  
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo eliminar.\n{e}")

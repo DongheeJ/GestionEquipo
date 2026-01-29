@@ -64,6 +64,9 @@ class Estudiante_view:
         self.btn_registrar = tk.Button(frame_btn, text="Registrar estudiante")
         self.btn_registrar.grid(row=0, column=1, padx=5)
 
+        self.btn_eliminar_multi = tk.Button(frame_btn, text="Eliminar seleccionados", bg="#ffcccc")
+        self.btn_eliminar_multi.grid(row=0, column=2, padx=5)
+        
         # =============== 테이블 (Treeview) ===============
         columnas = (
             "ID", "Nombre", "Apellido",
@@ -217,6 +220,15 @@ class Estudiante_view:
             self.tabla.insert("", "end", values=row)
 
 # =================== 필터 값 꺼내기 ===================
+    def get_selected_ids(self):
+        items = self.tabla.selection() # 선택된 모든 행의 iid 가져오기
+        selected_ids = []
+        for item in items:
+            values = self.tabla.item(item, "values")
+            if values:
+                selected_ids.append(int(values[0])) # ID 컬럼값 추출
+        return selected_ids
+    
     def get_busqueda_codigo_cedula(self):
         return self.entry_estudiante.get().strip()
 
@@ -230,10 +242,18 @@ class Estudiante_view:
         return self.no_entregado_var.get()
 
     def cargar_proyectos(self, proyectos):
-        map_proyectos = {desc: _id for _id, desc in proyectos}
-        self.proyectos_nombres = list(map_proyectos.keys())
+        # 1. self.map_proyectos로 인스턴스 변수화하여 나중에 ID를 찾을 수 있게 함
+        # "None" 항목을 가장 먼저 추가
+        self.map_proyectos = {"None": None}
+        for _id, desc in proyectos:
+            self.map_proyectos[desc] = _id
 
+        # 2. 리스트 생성 (딕셔너리의 키를 가져오면 "None"이 맨 앞에 옴)
+        self.proyectos_nombres = list(self.map_proyectos.keys())
+
+        # 3. 콤보박스에 값 설정 및 텍스트 비우기
         self.combo_proyecto_c["values"] = self.proyectos_nombres
+        self.combo_proyecto_c.set('')
 
         # 키 입력 시 필터 (디바운스 적용)
         self.combo_proyecto_c.bind("<KeyRelease>", self._filtrar_proyectos_debounced)
@@ -253,11 +273,13 @@ class Estudiante_view:
 
     def _aplicar_filtro_proyectos(self, texto):
         if not texto:
+            # 텍스트가 없으면 전체 리스트 ("None" 포함) 보여줌
             filtrados = self.proyectos_nombres
         else:
-            filtrados = [
+            # 검색 시에도 "None"은 맨 위에 유지, 나머지는 검색어 필터링 (대소문자 무시)
+            filtrados = ["None"] + [
                 desc for desc in self.proyectos_nombres
-                if texto in desc
+                if desc != "None" and (texto.lower() in desc.lower())
             ]
 
         self.combo_proyecto_c["values"] = filtrados

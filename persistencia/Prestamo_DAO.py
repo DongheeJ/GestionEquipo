@@ -2,7 +2,7 @@ class Prestamo_DAO:
     @staticmethod
     def es_prestamo_libre(idEquipo):
         query = f"""
-            SELECT hora_final
+            SELECT fecha_final
             FROM Prestamo 
             WHERE idEquipo = '{idEquipo}'
             ORDER BY idPrestamo DESC
@@ -11,32 +11,33 @@ class Prestamo_DAO:
         return query
     
     @staticmethod
-    def registrar(hora_inicio,multa,idEstudiante,idEquipo):
+    def registrar(fecha_inicio,multa,idEstudiante,idEquipo):
         query = f"""
-            insert into Prestamo (hora_inicio,multa,idEstudiante,idEquipo) 
-            values ('{hora_inicio}',{multa},{idEstudiante},{idEquipo});
+            insert into Prestamo (fecha_inicio,multa,idEstudiante,idEquipo) 
+            values ('{fecha_inicio}',{multa},{idEstudiante},{idEquipo});
         """
         return query
     
     @staticmethod
     def seleccionar_ultimo(idEstudiante,idEquipo):
         query = f"""
-            SELECT idPrestamo, hora_inicio, hora_final, multa, idEstudiante, idEquipo
+            SELECT idPrestamo, fecha_inicio, fecha_final, multa, idEstudiante, idEquipo
             from Prestamo p
 
             where idEstudiante = '{idEstudiante}'
             and idEquipo = '{idEquipo}'
-            and hora_final IS NULL
+            and fecha_final IS NULL
             ORDER BY p.idPrestamo DESC
             LIMIT 1;
         """
         return query
     
     @staticmethod
-    def listar(multados=False, no_entregados=False, entregados=False):
+    def listar(multados=False, no_entregados=False, entregados=False,
+                sort_fecha="",sort_order=""):
 
         query = """
-            SELECT p.idPrestamo, p.hora_inicio, p.hora_final, p.multa, 
+            SELECT p.idPrestamo, p.fecha_inicio, p.fecha_final, p.multa, 
                 p.idEstudiante, p.idEquipo
             FROM Prestamo p
         """
@@ -45,9 +46,9 @@ class Prestamo_DAO:
         condiciones = []
 
         if no_entregados:
-            condiciones.append("p.hora_final IS NULL")
+            condiciones.append("p.fecha_final IS NULL")
         if entregados:
-            condiciones.append("p.hora_final IS NOT NULL")
+            condiciones.append("p.fecha_final IS NOT NULL")
         if multados:
             condiciones.append("p.multa > 0")
 
@@ -57,12 +58,15 @@ class Prestamo_DAO:
         if condiciones:
             query += " WHERE " + " OR ".join(condiciones)
 
+        if sort_fecha != "":
+            query += " ORDER BY " + sort_fecha+ " "+ sort_order
+
         return query
     
     @staticmethod
-    def entregar(hora_final,multa,idPrestamo):
+    def entregar(fecha_final,multa,idPrestamo):
         query = f"""
-            UPDATE Prestamo SET hora_final = '{hora_final}',multa = '{multa}'
+            UPDATE Prestamo SET fecha_final = '{fecha_final}',multa = '{multa}'
             where idPrestamo = '{idPrestamo}';
         """
         return query

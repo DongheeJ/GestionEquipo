@@ -2,7 +2,7 @@ class EquipoDAO:
     @staticmethod
     def seleccionar(placa):
         return (
-            f"SELECT e.idEquipo, e.placa, el.idElemento, el.descripcion "
+            f"SELECT e.idEquipo, e.placa, el.idElemento, el.descripcion,"
             f"l.idLaboratorio, l.nombre, es.idEstado, es.descripcion "
             f"FROM Equipo e "
             f"LEFT JOIN Elemento el ON (e.idElemento = el.idElemento) "
@@ -20,7 +20,6 @@ class EquipoDAO:
     
     @staticmethod
     def listar(placa="", estado="", laboratorio="", elemento=""):
-        # 기본 SELECT (화면에 보여줄 4개 컬럼)
         query = """
         SELECT
             eq.idEquipo, eq.placa,
@@ -42,10 +41,16 @@ class EquipoDAO:
             condiciones.append(f"eq.placa = '{placa}'")
 
         if laboratorio:
-            condiciones.append(f"l.nombre = '{laboratorio}'")
+            if laboratorio == 'None':
+                condiciones.append(f"eq.idLaboratorio IS NULL")
+            else:
+                condiciones.append(f"l.nombre = '{laboratorio}'")
 
         if elemento:
-            condiciones.append(f"el.descripcion = '{elemento}'")
+            if elemento == 'None':
+                condiciones.append(f"eq.idElemento IS NULL")
+            else:
+                condiciones.append(f"el.descripcion = '{elemento}'")
 
         if estado:
             condiciones.append(f"es.descripcion = '{estado}'")
@@ -60,27 +65,30 @@ class EquipoDAO:
         campos = []
         placeholders = []
         params = []
-
-        if placa != "":
+        
+        if placa is not None and str(placa).strip() != "":
             campos.append("placa")
             placeholders.append("?")
-            params.append(placa)
+            params.append(str(placa))
 
         if idElemento is not None:
             campos.append("idElemento")
             placeholders.append("?")
-            params.append(idElemento)
+            params.append(int(idElemento))
 
         if idLaboratorio is not None:
+            # print(placa,idElemento,idLaboratorio)
             campos.append("idLaboratorio")
             placeholders.append("?")
-            params.append(idLaboratorio)
+            params.append(int(idLaboratorio))
 
         campos.append("idEstado")
         placeholders.append("?")
         params.append(1)
 
-        sql = f"INSERT INTO Equipo ({', '.join(campos)}) VALUES ({', '.join(placeholders)})"
+        sql = f"INSERT OR IGNORE INTO Equipo ({', '.join(campos)}) VALUES ({', '.join(placeholders)})"
+
+        # print(sql,tuple(params))
         return sql, tuple(params)
     
     @staticmethod

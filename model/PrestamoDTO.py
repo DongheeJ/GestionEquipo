@@ -2,10 +2,10 @@ from model.EstudianteDTO import EstudianteDTO
 from model.EquipoDTO import EquipoDTO
 
 class PrestamoDTO:
-    def __init__(self, idPrestamo=0, hora_inicio="", hora_final="",multa = 0, estudiante = None, equipo = None):
+    def __init__(self, idPrestamo=0, fecha_inicio="", fecha_final="",multa = 0, estudiante = None, equipo = None):
         self.idPrestamo = idPrestamo
-        self.hora_inicio = hora_inicio
-        self.hora_final = hora_final
+        self.fecha_inicio = fecha_inicio
+        self.fecha_final = fecha_final
         self.multa = multa
         self.estudiante = estudiante
         self.equipo = equipo
@@ -14,11 +14,11 @@ class PrestamoDTO:
     def get_idPrestamo(self):
         return self.idPrestamo
 
-    def get_hora_inicio(self):
-        return self.hora_inicio
+    def get_fecha_inicio(self):
+        return self.fecha_inicio
 
-    def get_hora_final(self):
-        return self.hora_final
+    def get_fecha_final(self):
+        return self.fecha_final
 
     def get_multa(self):
         return self.multa
@@ -33,11 +33,11 @@ class PrestamoDTO:
     def set_idPrestamo(self, idPrestamo):
         self.idPrestamo = idPrestamo
 
-    def set_hora_inicio(self, hora_inicio):
-        self.hora_inicio = hora_inicio
+    def set_fecha_inicio(self, fecha_inicio):
+        self.fecha_inicio = fecha_inicio
 
-    def set_hora_final(self, hora_final):
-        self.hora_final = hora_final
+    def set_fecha_final(self, fecha_final):
+        self.fecha_final = fecha_final
 
     def set_multa(self, multa):
         self.multa = multa

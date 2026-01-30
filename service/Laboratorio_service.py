@@ -11,7 +11,7 @@ class Laboratorio_service:
         conn = get_conn()
         cur = conn.cursor()
         # DAO.listar()의 반환값을 언패킹하여 전달
-        query, params = DAO.listar(nombre)
+        query, params = DAO.listar(nombre.strip())
         cur.execute(query, params)
         
         rs = cur.fetchall()
@@ -43,11 +43,11 @@ class Laboratorio_service:
         conn.close()
         return mapping
 
-    def insertar(self, nombre):
+    def insertar(self, nombre=""):
         conn = get_conn()
         cur = conn.cursor()
         # DAO.insertar 반환값을 언패킹(*)하여 쿼리와 파라미터를 동시에 전달
-        cur.execute(*DAO.insertar(nombre))
+        cur.execute(*DAO.insertar(nombre.strip()))
         conn.commit()
         cur.close()
         conn.close()
@@ -60,10 +60,10 @@ class Laboratorio_service:
         cur.close()
         conn.close()
 
-    def update(self, idLaboratorio, nombre):
+    def update(self, idLaboratorio, nombre=""):
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute(*DAO.update(idLaboratorio, nombre))
+        cur.execute(*DAO.update(idLaboratorio, nombre.strip()))
         conn.commit()
         cur.close()
         conn.close()

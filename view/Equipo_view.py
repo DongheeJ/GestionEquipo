@@ -6,16 +6,16 @@ from typing import List
 class Equipo_view:
     def __init__(self, root):
         self.root = root
-        self.root.title("Gestión de Equipos")
-        self.root.state('zoomed')
+        # self.root.title("Gestión de Equipos")
+        # self.root.state('zoomed')
         # --- 창 크기 및 중앙 배치 설정 ---
-        width, height = 1000, 600
-        sw = self.root.winfo_screenwidth()
-        sh = self.root.winfo_screenheight()
-        x = (sw // 2) - (width // 2)
-        y = (sh // 2) - (height // 2)
-        self.root.geometry(f"{width}x{height}+{x}+{y}")
-        self.root.resizable(True, True)
+        # width, height = 1000, 600
+        # sw = self.root.winfo_screenwidth()
+        # sh = self.root.winfo_screenheight()
+        # x = (sw // 2) - (width // 2)
+        # y = (sh // 2) - (height // 2)
+        # self.root.geometry(f"{width}x{height}+{x}+{y}")
+        # self.root.resizable(True, True)
 
         self._elemento_filter_after_id = None
         self._laboratorio_filter_after_id = None
@@ -25,9 +25,9 @@ class Equipo_view:
 
         # Placa
         tk.Label(frame_top, text="Placa:").grid(row=0, column=0, padx=5, pady=5, sticky="e")
-        self.entry_placa = tk.Entry(frame_top, width=25)
+        self.entry_placa = ttk.Combobox(frame_top, state="normal", width=25)
         self.entry_placa.grid(row=0, column=1, padx=5, pady=5)
-
+        self.entry_placa["values"] = ("None")
         # Elemento (FK)
         tk.Label(frame_top, text="Elemento:").grid(row=1, column=0, padx=5, pady=5, sticky="e")
         self.combo_elemento = ttk.Combobox(frame_top, state="normal", width=30)

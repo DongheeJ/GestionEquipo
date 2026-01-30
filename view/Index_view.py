@@ -8,8 +8,8 @@ from service.Prestamo_service import Prestamo_service
 from service.Consumible_service import Consumible_service
 from service.Estudiante_service import Estudiante_service
 
-from controller.List_prestamo_controller import List_prestamo_controller
-from view.List_prestamo_view import List_prestamo_view
+from controller.Prestamo_controller import List_prestamo_controller
+from view.Prestamo_view import List_prestamo_view
 
 from view.Estudiante_view import Estudiante_view
 from controller.Estudiante_controller import Estudiante_controller

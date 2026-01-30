@@ -24,19 +24,24 @@ class ExcelController:
 
     def insert_lab(self,df):
         laboratorios = [str(l).strip() for l in df['laboratorio / ubicación'].unique() if pd.notnull(l) and str(l).strip() != ""]
-        for lab in enumerate(laboratorios):
+
+        for i, lab in enumerate(laboratorios):
             self.laboratorio_service.insertar(lab)
 
     def insert_elemento(self,df):
         elementos = [str(e).strip() for e in df['descripcion del elemento'].unique() if pd.notnull(e) and str(e).strip() != ""]
-        for el in enumerate(elementos):
+
+        for i, el in enumerate(elementos):
             self.elemento_service.insertar(el)
     
     def insert_equipo(self,df):
         lab_map = self.laboratorio_service.mapear_por_nombre()
         el_map = self.elemento_service.mapear_por_nombre()
-        for row in df.iterrows():
+        # 4. Equipo 데이터 Insert
+        for i, row in df.iterrows():
             placa = str(row['placa']).strip()
+            if placa == 'nan':
+                placa = ""
             lab = None
             el = None
             if 'laboratorio / ubicación' in df.columns:
@@ -51,7 +56,6 @@ class ExcelController:
             el_id = None
             if el != None:
                 el_id = el.get_idElemento()
-            
             self.equipo_service.insertar(placa,el_id,lab_id)
 
     def handle_excel_import(self):

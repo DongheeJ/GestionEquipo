@@ -10,7 +10,7 @@ class Proyecto_C_service:
     def listar(self,nombre="") -> List[Proyecto_C_DTO]: 
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute(DAO.listar(nombre))
+        cur.execute(DAO.listar(nombre.strip()))
         rs = cur.fetchall()
 
         proyectos = []
@@ -22,10 +22,10 @@ class Proyecto_C_service:
         conn.close()
         return proyectos
     
-    def insertar(self,nombre):
+    def insertar(self,nombre=""):
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute(DAO.insertar(nombre))
+        cur.execute(DAO.insertar(nombre.strip()))
         conn.commit()
         cur.close()
         conn.close()
@@ -38,10 +38,10 @@ class Proyecto_C_service:
         cur.close()
         conn.close()
 
-    def update(self,id_proyecto,nombre):
+    def update(self,id_proyecto,nombre=""):
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute(DAO.update(id_proyecto,nombre))
+        cur.execute(DAO.update(id_proyecto,nombre.strip()))
         conn.commit()
         cur.close()
         conn.close()

@@ -10,7 +10,7 @@ class Elemento_service:
     def listar(self,descripcion="") -> List[ElementoDTO]: 
         conn = get_conn()
         cur = conn.cursor()
-        query,params = DAO.listar(descripcion)
+        query,params = DAO.listar(descripcion.strip())
         cur.execute(query,params)
         rs = cur.fetchall()
 
@@ -42,11 +42,11 @@ class Elemento_service:
         conn.close()
         return elementos
 
-    def insertar(self, descripcion):
+    def insertar(self, descripcion=""):
         conn = get_conn()
         cur = conn.cursor()
         # DAO.insertar 반환값을 언패킹하여 전달
-        cur.execute(*DAO.insertar(descripcion))
+        cur.execute(*DAO.insertar(descripcion.strip()))
         conn.commit()
         cur.close()
         conn.close()
@@ -60,11 +60,11 @@ class Elemento_service:
         cur.close()
         conn.close()
 
-    def update(self, idElemento, descripcion):
+    def update(self, idElemento, descripcion=""):
         conn = get_conn()
         cur = conn.cursor()
         # DAO.update 반환값을 언패킹하여 전달
-        cur.execute(*DAO.update(idElemento, descripcion))
+        cur.execute(*DAO.update(idElemento, descripcion.strip()))
         conn.commit()
         cur.close()
         conn.close()

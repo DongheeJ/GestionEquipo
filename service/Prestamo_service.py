@@ -17,8 +17,8 @@ class Prestamo_service:
         conn = get_conn()
         cur = conn.cursor()
 
-        estudiantes = eService.mapear(inf=estudiante)
-        equipos = eqService.mapear(placa=equipo)
+        estudiantes = eService.mapear(inf=estudiante.strip())
+        equipos = eqService.mapear(placa=equipo.strip())
 
         cur.execute(DAO.listar(multados,no_entregados,entregados,sort_fecha,sort_order))
 

@@ -6,21 +6,21 @@ from typing import List
 class Elemento_view:
     def __init__(self, root):
         self.root = root
-        self.root.title("Gestión de elemento")
-        self.root.state('zoomed')
-        # 1. 창 크기 설정
-        width = 1000  # 테이블이 있으므로 조금 넓게 설정
-        height = 600
+        # self.root.title("Gestión de elemento")
+        # self.root.state('zoomed')
+        # # 1. 창 크기 설정
+        # width = 1000  # 테이블이 있으므로 조금 넓게 설정
+        # height = 600
         
-        # 2. 화면 중앙 좌표 계산
-        screen_width = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
+        # # 2. 화면 중앙 좌표 계산
+        # screen_width = self.root.winfo_screenwidth()
+        # screen_height = self.root.winfo_screenheight()
         
-        x = (screen_width // 2) - (width // 2)
-        y = (screen_height // 2) - (height // 2)
+        # x = (screen_width // 2) - (width // 2)
+        # y = (screen_height // 2) - (height // 2)
         
-        # 3. 위치와 크기 적용 ("너비x높이+X좌표+Y좌표")
-        self.root.geometry(f"{width}x{height}+{x}+{y}")
+        # # 3. 위치와 크기 적용 ("너비x높이+X좌표+Y좌표")
+        # self.root.geometry(f"{width}x{height}+{x}+{y}")
 
         # ================= 필터 프레임 =================
         frame_filtros = tk.Frame(root)

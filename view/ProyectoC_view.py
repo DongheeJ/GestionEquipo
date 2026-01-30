@@ -6,17 +6,17 @@ from typing import List
 class ProyectoC_view:
     def __init__(self, root):
         self.root = root
-        self.root.title("Gestión de proyecto curricular")
+        # self.root.title("Gestión de proyecto curricular")
 
-        self.root.state('zoomed')
-        # --- 창 크기 및 중앙 배치 설정 ---
-        width, height = 1000, 600
-        sw = self.root.winfo_screenwidth()
-        sh = self.root.winfo_screenheight()
-        x = (sw // 2) - (width // 2)
-        y = (sh // 2) - (height // 2)
-        self.root.geometry(f"{width}x{height}+{x}+{y}")
-        self.root.resizable(True, True)
+        # self.root.state('zoomed')
+        # # --- 창 크기 및 중앙 배치 설정 ---
+        # width, height = 1000, 600
+        # sw = self.root.winfo_screenwidth()
+        # sh = self.root.winfo_screenheight()
+        # x = (sw // 2) - (width // 2)
+        # y = (sh // 2) - (height // 2)
+        # self.root.geometry(f"{width}x{height}+{x}+{y}")
+        # self.root.resizable(True, True)
         
         # ================= 필터 프레임 =================
         frame_filtros = tk.Frame(root)

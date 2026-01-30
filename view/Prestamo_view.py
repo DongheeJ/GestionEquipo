@@ -1,123 +1,257 @@
 import tkinter as tk
 from tkinter import ttk
+from model.PrestamoDTO import PrestamoDTO
+from typing import List
 
-class Prestamo_view:
+class List_prestamo_view:
     def __init__(self, root):
         self.root = root
-        self.root.title("Préstamo de equipo")
+        # self.root.title("Préstamo de equipo")
+        # self.root.state('zoomed')
+        # width, height = 1000, 600
+        # sw = self.root.winfo_screenwidth()
+        # sh = self.root.winfo_screenheight()
+        # x = (sw // 2) - (width // 2)
+        # y = (sh // 2) - (height // 2)
+        # self.root.geometry(f"{width}x{height}+{x}+{y}")
+        # self.root.resizable(True, True)
+
+# ---------------- 상단 필터 및 버튼 영역 ----------------
+        top_frame = tk.Frame(self.root)
+        top_frame.grid(row=0, column=0, sticky="ew", pady=10)
         
-        width, height = 1000, 600
-        sw = self.root.winfo_screenwidth()
-        sh = self.root.winfo_screenheight()
-        x = (sw // 2) - (width // 2)
-        y = (sh // 2) - (height // 2)
-        self.root.geometry(f"{width}x{height}+{x}+{y}")
-        self.root.resizable(True, True)
+        # 중앙 정렬을 원하시면 이 프레임을 하나 더 감싸는 게 좋습니다.
+        container = tk.Frame(top_frame)
+        container.pack(anchor="center") # 전체를 중앙으로
+
+        # 1. 왼쪽: 필터 영역 (Checkbuttons & Entries)
+        filtros_frame = tk.Frame(container)
+        filtros_frame.pack(side="left", padx=10)
+
+        self.multado_var = tk.BooleanVar(value=False)
+        tk.Checkbutton(filtros_frame, text="Multados", variable=self.multado_var).grid(row=0, column=0, sticky="w")
         
-        # 메인 레이아웃 설정 (좌측 입력 / 우측 버튼)
-        self.root.columnconfigure(0, weight=3)  # 입력 영역 비중 확대
-        self.root.columnconfigure(1, weight=1)
+        self.no_entregados_var = tk.BooleanVar(value=False)
+        tk.Checkbutton(filtros_frame, text="No entregados", variable=self.no_entregados_var).grid(row=1, column=0, sticky="w")
+        
+        self.entregados_var = tk.BooleanVar(value=False)
+        tk.Checkbutton(filtros_frame, text="Entregados", variable=self.entregados_var).grid(row=2, column=0, sticky="w")
 
-        # ─────────────── 왼쪽 영역: 입력 폼 ───────────────
-        # grid를 사용하여 라벨과 입력창의 세로 줄을 맞춤
-        self.frame_inputs = tk.Frame(self.root)
-        self.frame_inputs.grid(row=0, column=0, padx=50, pady=30, sticky="nsew")
+        # 입력창 (2~3열)
+        self.estudiante_var = tk.StringVar()
+        tk.Label(filtros_frame, text='Estudiante\ncódigo o cedula', font=('calibre',8,'bold')).grid(row=0, column=2, padx=10)
+        tk.Entry(filtros_frame, textvariable=self.estudiante_var, width=15).grid(row=0, column=3, padx=5)
 
-        # 1. Estudiante (줄바꿈 라벨 적용 예시)
-        tk.Label(self.frame_inputs, text="Código o cédula\nestudiante:", font=('calibre', 10, 'bold'), justify="left").grid(row=0, column=0, sticky="w", pady=10)
-        self.inputEstudiante = tk.Entry(self.frame_inputs, width=40, font=('calibre', 10))
-        self.inputEstudiante.grid(row=0, column=1, padx=10, sticky="w")
+        self.equipo_var = tk.StringVar()
+        tk.Label(filtros_frame, text='Equipo\nplaca', font=('calibre',8,'bold')).grid(row=1, column=2, padx=10)
+        tk.Entry(filtros_frame, textvariable=self.equipo_var, width=15).grid(row=1, column=3, padx=5)
 
-        # 2. Placa
-        tk.Label(self.frame_inputs, text="Placa:", font=('calibre', 10, 'bold')).grid(row=1, column=0, sticky="w", pady=10)
-        self.inputPlaca = tk.Entry(self.frame_inputs, width=40, font=('calibre', 10))
-        self.inputPlaca.grid(row=1, column=1, padx=10, sticky="w")
+# --- 신규: 정렬(Orden) 기능 추가 ---
+        tk.Label(filtros_frame, text='Ordenar por:', font=('calibre',8,'bold')).grid(row=2, column=2, padx=10)
+        
+        # 정렬 대상 (시작일, 종료일)
+        self.sort_field_var = tk.StringVar(value="") # 기본값
+        self.combo_sort_field = ttk.Combobox(filtros_frame, textvariable=self.sort_field_var, width=12, state="readonly")
+        self.combo_sort_field['values'] = ("","fecha_inicio", "fecha_final")
+        self.combo_sort_field.grid(row=2, column=3, padx=5, sticky="w")
 
-        # 3. Multa
-        tk.Label(self.frame_inputs, text="Multa:", font=('calibre', 10, 'bold')).grid(row=2, column=0, sticky="w", pady=10)
-        self.inputMulta = tk.Entry(self.frame_inputs, width=40, font=('calibre', 10))
-        self.inputMulta.grid(row=2, column=1, padx=10, sticky="w")
+        # 정렬 순서 (오름차순, 내림차순)
+        self.sort_order_var = tk.StringVar(value="DESC") # 최신순이 보통 기본이므로 DESC
+        self.combo_sort_order = ttk.Combobox(filtros_frame, textvariable=self.sort_order_var, width=12, state="readonly")
+        self.combo_sort_order['values'] = ("ASC", "DESC")
+        self.combo_sort_order.grid(row=2, column=4, padx=5, sticky="w")
+        # ----------------------------------
+        
+        # 2. 오른쪽: 버튼 영역 (옆으로 나란히 배치)
+        boton_frame = tk.Frame(container)
+        boton_frame.pack(side="left", padx=20) # filtros_frame 바로 오른쪽에 붙음
 
-        # 4. Consumibles (스크롤 가능)
-        tk.Label(self.frame_inputs, text="Consumibles:", font=('calibre', 10, 'bold')).grid(
-            row=3, column=0, sticky="nw", pady=10
+        # 버튼들을 세로로 쌓기 위해 fill="x" 유지
+        self.btn_aplicar_filtros = tk.Button(boton_frame, text="Aplicar filtros", width=15)
+        self.btn_aplicar_filtros.pack(pady=2)
+
+        self.btn_listar_todos = tk.Button(boton_frame, text="Listar todos", width=15)
+        self.btn_listar_todos.pack(pady=2)
+
+        self.btn_registrar = tk.Button(boton_frame, text="Registrar", width=15, bg="#e1e1e1")
+        self.btn_registrar.pack(pady=2)
+
+        self.btn_eliminar_multi = tk.Button(boton_frame, text="Eliminar seleccionados", bg="#ffcccc")
+        self.btn_eliminar_multi.pack(pady=2)
+        # ---------------- 테이블 영역 (Treeview로 교체) ----------------
+        self.root.grid_rowconfigure(1, weight=1)
+        self.root.grid_columnconfigure(0, weight=1)
+
+        frame_table = tk.Frame(self.root)
+        frame_table.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+
+        columnas = (
+            "ID", "Inicio", "Final", "Multa",
+            "Estudiante", "Equipo",
+            "Ver consumibles", "Pagar multa", "Entregar", "Eliminar" # 10번째에 Eliminar 배치
         )
 
-        # 컨테이너 (Canvas + Scrollbar)
-        cons_container = tk.Frame(self.frame_inputs)
-        cons_container.grid(row=3, column=1, padx=10, pady=10, sticky="w")
+        self.tabla = ttk.Treeview(frame_table, columns=columnas, show="headings")
+        for col in columnas:
+            self.tabla.heading(col, text=col)
 
-        self.cons_canvas = tk.Canvas(cons_container, width=360, height=170, highlightthickness=1)
-        self.cons_canvas.pack(side="left", fill="both", expand=True)
+        # 컬럼 폭(원하는대로 조정 가능)
+        self.tabla.column("ID", width=60, anchor="center")
+        self.tabla.column("Inicio", width=130, anchor="center")
+        self.tabla.column("Final", width=130, anchor="center")
+        self.tabla.column("Multa", width=80, anchor="center")
+        self.tabla.column("Estudiante", width=160)
+        self.tabla.column("Equipo", width=250)
+        self.tabla.column("Ver consumibles", width=120, anchor="center")
+        self.tabla.column("Pagar multa", width=120, anchor="center")
+        self.tabla.column("Entregar", width=120, anchor="center")
+        self.tabla.column("Eliminar", width=100, anchor="center")
+        # 스크롤바 (Estudiante_view와 동일)
+        scrollbar_y = ttk.Scrollbar(frame_table, orient="vertical", command=self.tabla.yview)
+        self.tabla.configure(yscrollcommand=scrollbar_y.set)
 
-        self.cons_scrollbar = tk.Scrollbar(cons_container, orient="vertical", command=self.cons_canvas.yview)
-        self.cons_scrollbar.pack(side="right", fill="y")
+        self.tabla.pack(side="left", fill="both", expand=True)
+        scrollbar_y.pack(side="right", fill="y")
 
-        self.cons_canvas.configure(yscrollcommand=self.cons_scrollbar.set)
-
-        # Canvas 안에 실제로 Entry들이 들어갈 프레임
-        self.frame_ipConsumibles = tk.Frame(self.cons_canvas)
-        self.cons_window = self.cons_canvas.create_window((0, 0), window=self.frame_ipConsumibles, anchor="nw")
-
-        # 스크롤 영역 자동 갱신
-        def _update_scrollregion(event=None):
-            self.cons_canvas.configure(scrollregion=self.cons_canvas.bbox("all"))
-
-        self.frame_ipConsumibles.bind("<Configure>", _update_scrollregion)
-
-        # Canvas 크기 변경 시 inner frame 폭 맞추기
-        def _resize_inner(event):
-            self.cons_canvas.itemconfigure(self.cons_window, width=event.width)
-
-        self.cons_canvas.bind("<Configure>", _resize_inner)
-
-        # 마우스휠 스크롤 (Windows)
-        self.cons_canvas.bind_all(
-            "<MouseWheel>",
-            lambda e: self.cons_canvas.yview_scroll(int(-1 * (e.delta / 120)), "units")
-        )
-
-        self.consumibles = []
-        # ─────────────── 오른쪽 영역: 액션 버튼 ───────────────
-        self.frame_botones = tk.LabelFrame(self.root, text="Acciones", padx=20, pady=20) # 시각적 구분을 위해 LabelFrame 사용
-        self.frame_botones.grid(row=0, column=1, padx=30, pady=30, sticky="ne")
-
-        # 버튼들을 세로로 예쁘게 배치
-        btn_config = {'width': 15, 'pady': 5}
+        # 클릭 이벤트 방식도 동일하게
+        self.tabla.bind("<Button-1>", self._on_click_cell)
         
-        self.btn_add = tk.Button(self.frame_botones, text="+ Consumible", command=self.add_consumible, **btn_config)
-        self.btn_add.pack(pady=5)
+        # 핸들러
+        self.on_ver_consumibles = None
+        self.on_pagar_multa = None
+        self.on_entregar = None
+        self.on_eliminar = None
+        # row_id -> PrestamoDTO 매핑 (클릭 시 DTO 얻기 위해)
+        self._row_to_prestamo = {}
 
-        self.btn_registrar = tk.Button(self.frame_botones, text="Registrar", bg="#e1f5fe", **btn_config)
-        self.btn_registrar.pack(pady=5)
-
-        self.btn_entregar = tk.Button(self.frame_botones, text="Entregar", bg="#e8f5e9", **btn_config)
-        self.btn_entregar.pack(pady=5)
-
-        self.btn_clear = tk.Button(self.frame_botones, text="Limpiar datos", **btn_config)
-        self.btn_clear.pack(pady=20) # 하단에 조금 떨어뜨려 배치
-
-    # ─────────────── 기능 메서드 ───────────────
-    def add_consumible(self):
-        var = tk.StringVar()
-        # 삭제 버튼이 포함된 프레임을 추가하면 더 좋습니다 (선택 사항)
-        entry = tk.Entry(self.frame_ipConsumibles, width=35, textvariable=var)
-        entry.pack(pady=2, anchor="w")
-        self.consumibles.append(var)
-
-    def get_placa(self): return self.inputPlaca.get()
-    def get_inf_Estudiante(self): return self.inputEstudiante.get()
-    def get_multa(self): return self.inputMulta.get()
-    def get_consumibles(self): return [c.get() for c in self.consumibles]
+    # def _toggle_radio(self):
+    #     """라디오 버튼 토글 로직: 이미 선택된 것을 누르면 해제"""
+    #     current_val = self.estado_var.get()
+    #     if current_val == self.last_selected:
+    #         self.estado_var.set(0)
+    #         self.last_selected = 0
+    #     else:
+    #         self.last_selected = current_val
+    def get_selected_ids(self):
+        items = self.tabla.selection() # 선택된 모든 행의 iid 가져오기
+        selected_ids = []
+        for item in items:
+            values = self.tabla.item(item, "values")
+            if values:
+                selected_ids.append(int(values[0])) # ID 컬럼값 추출
+        return selected_ids
     
-    def set_placa(self, placa):
-        self.inputPlaca.delete(0, tk.END)
-        self.inputPlaca.insert(0, placa)
+    def get_estudiante(self):
+        return self.estudiante_var.get()
+    def get_placa(self):
+        return self.equipo_var.get()
+    def get_multados(self):
+        return self.multado_var.get()
+    def get_no_entregados(self):
+        return self.no_entregados_var.get()
+    def get_entregados(self):
+        return self.entregados_var.get()
+    def get_sort_field(self):
+        selection = self.sort_field_var.get()
+        # 매핑 (UI용 텍스트 -> 실제 DB 컬럼명)
+        mapping = {
+            "fecha_inicio": "p.fecha_inicio",
+            "fecha_final": "p.fecha_final"
+        }
+        return mapping.get(selection, "")
+    def get_sort_order(self):
+        return self.sort_order_var.get() # "ASC" 또는 "DESC" 반환
+    
+    def set_estudiante(self,estudiante):
+        self.estudiante_var.set(estudiante)
 
-    def clear(self):
-        self.inputEstudiante.delete(0, tk.END)
-        self.inputPlaca.delete(0, tk.END)
-        self.inputMulta.delete(0, tk.END)
-        for widget in self.frame_ipConsumibles.winfo_children():
-            widget.destroy()
-        self.consumibles.clear()
+    def set_placa(self,placa):
+        self.equipo_var.set(placa)
+
+    def set_multados(self,value):
+        self.multado_var.set(value)
+
+    def set_no_entregados(self,value):
+        self.no_entregados_var.set(value)
+
+    def set_entregados(self,value):
+        self.entregados_var.set(value)
+    
+    def set_ver_consumibles_handler(self, handler):
+        self.on_ver_consumibles = handler
+
+    def set_pagar_multa_handle(self, handler):
+        self.on_pagar_multa = handler
+
+    def set_entregar_handle(self, handler):
+        self.on_entregar = handler
+
+    def set_eliminar_handle(self, handler):
+        self.on_eliminar = handler
+
+    def _on_click_cell(self, event):
+        region = self.tabla.identify("region", event.x, event.y)
+        if region != "cell":
+            return
+
+        col = self.tabla.identify_column(event.x)  # "#1", "#2", ...
+        row_id = self.tabla.identify_row(event.y)
+        if not row_id:
+            return
+
+        prestamo = self._row_to_prestamo.get(row_id)
+        if not prestamo:
+            return
+
+        # 컬럼 번호(8개)
+        col_ver = "#7"    # Ver consumibles
+        col_pagar = "#8"  # Pagar multa
+        col_entregar ="#9"
+        col_eliminar = "#10"
+
+        if col == col_ver and self.on_ver_consumibles:
+            self.on_ver_consumibles(prestamo)
+        elif col == col_pagar and self.on_pagar_multa:
+            self.on_pagar_multa(prestamo)
+        elif col == col_entregar and self.on_entregar:
+            self.on_entregar(prestamo)
+        elif col == col_eliminar and self.on_eliminar: # Eliminar 클릭 시
+                    self.on_eliminar(prestamo)
+
+    def render(self, prestamos: List[PrestamoDTO]):
+        # 기존 행 삭제
+        for fila in self.tabla.get_children():
+            self.tabla.delete(fila)
+        self._row_to_prestamo.clear()
+
+        if not prestamos:
+            return
+
+        for p in prestamos:
+            id_prestamo = p.get_idPrestamo()
+            fecha_inicio = p.get_fecha_inicio()
+            fecha_final  = p.get_fecha_final()
+            multa       = p.get_multa()
+
+            nombre_estudiante = p.get_estudiante().get_nombre()
+            equipo_info = (
+                p.get_equipo().get_Elemento().get_descripcion()
+                + " - "
+                + p.get_equipo().get_placa()
+            )
+
+            row = (
+                id_prestamo,
+                fecha_inicio,
+                fecha_final,
+                multa,
+                nombre_estudiante,
+                equipo_info,
+                "Ver",
+                "Pagar",
+                "Entregar",
+                "Eliminar"
+            )
+
+            item_id = self.tabla.insert("", "end", values=row)
+            self._row_to_prestamo[item_id] = p

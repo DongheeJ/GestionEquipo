@@ -14,7 +14,7 @@ class Equipo_service:
     def listar(self,placa="", estado="", laboratorio="", elemento="") -> List[EquipoDTO]: 
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute(DAO.listar(placa, estado, laboratorio, elemento))
+        cur.execute(DAO.listar(placa.strip(), estado.strip(), laboratorio.strip(), elemento.strip()))
         rs = cur.fetchall()
 
         equipos = []
@@ -33,7 +33,7 @@ class Equipo_service:
     def mapear(self,placa="", estado="", laboratorio="", elemento="")-> List[EquipoDTO]: 
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute(DAO.listar(placa, estado, laboratorio, elemento))
+        cur.execute(DAO.listar(placa.strip(), estado.strip(), laboratorio.strip(), elemento.strip()))
         rs = cur.fetchall()
         equipos = {}
         for r in rs:
@@ -47,10 +47,10 @@ class Equipo_service:
         conn.close()
         return equipos
 
-    def seleccionar(self,placa) -> EquipoDTO:
+    def seleccionar(self,placa="") -> EquipoDTO:
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute(DAO.seleccionar(placa))
+        cur.execute(DAO.seleccionar(placa.strip()))
         r = cur.fetchone()
 
         cur.close()
@@ -75,7 +75,7 @@ class Equipo_service:
         conn = get_conn()
         cur = conn.cursor()
         try:
-            sql, params = DAO.insertar(placa, idElemento, idLaboratorio)
+            sql, params = DAO.insertar(placa.strip(), idElemento, idLaboratorio)
             cur.execute(sql, params)
             conn.commit()
             return "OK", "Equipo registrado correctamente."
@@ -93,7 +93,7 @@ class Equipo_service:
         cur = conn.cursor()
         
         try:
-            sql, params = DAO.editar(idEquipo,placa,idElemento,idLaboratorio)
+            sql, params = DAO.editar(idEquipo,placa.strip(),idElemento,idLaboratorio)
             cur.execute(sql, params)
             conn.commit()
             return "OK", "Equipo modificado correctamente."

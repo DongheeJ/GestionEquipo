@@ -11,7 +11,7 @@ class Estudiante_service:
     def listar(self,inf = "", proyecto_c="", multado = False,no_entregado = False) -> List[EstudianteDTO]: 
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute(DAO.listar(inf, proyecto_c, multado, no_entregado))
+        cur.execute(DAO.listar(inf.strip(), proyecto_c.strip(), multado, no_entregado))
         rs = cur.fetchall()
 
         estudiantes = []
@@ -27,7 +27,7 @@ class Estudiante_service:
     def mapear(self,inf = "", proyecto_c="", multado = False,no_entregado = False) -> List[EstudianteDTO]: 
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute(DAO.listar(inf, proyecto_c, multado, no_entregado))
+        cur.execute(DAO.listar(inf.strip(), proyecto_c.strip(), multado, no_entregado))
         rs = cur.fetchall()
 
         estudiantes = {}
@@ -40,10 +40,10 @@ class Estudiante_service:
         conn.close()
         return estudiantes
     
-    def seleccionar(self,inf_estudiante) -> EstudianteDTO:
+    def seleccionar(self,inf_estudiante="") -> EstudianteDTO:
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute(DAO.seleccionar(inf_estudiante))
+        cur.execute(DAO.seleccionar(inf_estudiante.strip()))
         selected = cur.fetchone()
 
         cur.close()
@@ -58,7 +58,7 @@ class Estudiante_service:
     def registrar(self,nombre="", apellido="", correo="", celular="", codigo="", cedula="", idProyecto_C=None):
         conn = get_conn()
         cur = conn.cursor()
-        query, param = DAO.registrar(nombre, apellido, correo, celular, codigo, cedula, idProyecto_C)
+        query, param = DAO.registrar(nombre.strip(), apellido.strip(), correo.strip(), celular.strip(), codigo.strip(), cedula.strip(), idProyecto_C)
         cur.execute(query,param)
         conn.commit()
         cur.close()
@@ -67,7 +67,7 @@ class Estudiante_service:
     def editar(self,id,nombre="", apellido="", correo="", celular="", codigo="", cedula="", idProyecto_C=None):
         conn = get_conn()
         cur = conn.cursor()
-        query, param = DAO.editar(id, nombre, apellido, correo, celular, codigo, cedula, idProyecto_C)
+        query, param = DAO.editar(id, nombre.strip(), apellido.strip(), correo.strip(), celular.strip(), codigo.strip(), cedula.strip(), idProyecto_C)
         cur.execute(query,param)
         conn.commit()
         cur.close()

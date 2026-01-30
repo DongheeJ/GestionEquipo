@@ -1,8 +1,8 @@
 from tkinter import messagebox
 import tkinter as tk
 from service.Consumible_service import Consumible_service
-from view.List_prestamo_view import List_prestamo_view
-from controller.List_prestamo_controller import List_prestamo_controller
+from view.Prestamo_view import List_prestamo_view
+from controller.Prestamo_controller import List_prestamo_controller
 from view.RegistrarEstudiante_view import RegistrarEstudiante_view
 from view.EditarEstudiante_view import EditarEstudiante_view
 from controller.RegistrarEstudiante_controller import RegistrarEstudiante_controller
@@ -13,11 +13,14 @@ from view.Estudiante_view import Estudiante_view
 from model.EstudianteDTO import EstudianteDTO
 
 from service.Prestamo_service import Prestamo_service
+from model.PrestamoDTO import PrestamoDTO
 
 from service.Proyecto_C_service import Proyecto_C_service
 
 class Estudiante_controller:
-    def __init__(self, estudiante_service: Estudiante_service, prestamo_service: Prestamo_service, proyecto_service: Proyecto_C_service, estidiante_view: Estudiante_view):
+    def __init__(self, 
+                estudiante_service: Estudiante_service, prestamo_service: Prestamo_service,
+                proyecto_service: Proyecto_C_service, estidiante_view: Estudiante_view):
         self.estudiante_service = estudiante_service
         self.prestamo_service = prestamo_service
         self.proyecto_service = proyecto_service
@@ -76,10 +79,32 @@ class Estudiante_controller:
         )
 
     def eliminar(self, estudiante: EstudianteDTO):
-        confirmar = messagebox.askyesno(
-            "Confirmar",
-            f"¿Seguro que deseas eliminar el estudiante (Codigo: {estudiante.get_codigo()})?"
-        )
+        prestamos = self.prestamo_service.listar(estudiante=estudiante.get_codigo())
+
+        multado = False
+        no_entregado = False
+
+        for p in prestamos:
+            p: PrestamoDTO
+            if p.get_fecha_final() is None:
+                no_entregado = True
+            if p.get_multa() > 0:
+                multado = True
+
+        mensaje = f"¿Seguro que deseas eliminar el estudiante (Codigo: {estudiante.get_codigo()})?"
+        
+        # 2. 조건에 따른 경고 문구 추가 (\n으로 줄바꿈)
+        alertas = ""
+        if no_entregado:
+            alertas += "\n⚠️ ADVERTENCIA: El estudiante tiene préstamos pendientes (No entregados)."
+        if multado:
+            alertas += "\n⚠️ ADVERTENCIA: El estudiante tiene multas sin pagar."
+            
+        if alertas:
+            mensaje += "\n" + alertas + "\n\nEsta acción podría causar inconsistencias."
+
+        confirmar = messagebox.askyesno("Confirmar Eliminación", mensaje)
+
         if not confirmar:
             return
 

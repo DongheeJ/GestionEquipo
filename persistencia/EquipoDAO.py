@@ -38,7 +38,10 @@ class EquipoDAO:
         condiciones = []
 
         if placa:
-            condiciones.append(f"eq.placa = '{placa}'")
+            if placa == 'None':
+                condiciones.append(f"eq.placa IS NULL")
+            else:
+                condiciones.append(f"eq.placa = '{placa}'")
 
         if laboratorio:
             if laboratorio == 'None':

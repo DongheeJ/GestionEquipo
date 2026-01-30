@@ -1,1 +1,1 @@
-from controller.Prestamo_controller import Prestamo_controller
+from controller.RegistrarPrestamo_controller import Prestamo_controller

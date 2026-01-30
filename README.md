@@ -6,7 +6,7 @@ Este software ha sido diseñado para facilitar la administración de inventario,
 Para que el programa funcione correctamente, debe descargar la carpeta completa llamada SistemaGestionLab. El programa no funcionará si mueve archivos individuales fuera de esta carpeta.
 
 1. Instrucciones de ejecución
-Descomprima el archivo SistemaGestionLab.zip.
+Descomprima la carpeta dist/SistemaGestionLab.
 
 Abra la carpeta y busque el archivo llamado SistemaGestionLab.exe.
 
